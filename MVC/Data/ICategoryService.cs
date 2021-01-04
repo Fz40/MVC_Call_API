@@ -13,6 +13,7 @@ namespace MVC.Data
 
         IEnumerable<CategoryModel> GetAllCategoty();
 
+        Task<IEnumerable<CategoryModel>> GetAll_Categoty();
         CategoryModel GetCategoryById(int? id);
 
         void CreateCategory(CategoryModel cat);

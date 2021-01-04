@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
+using System.Web.Mvc;
 
 namespace MVC.Data
 {
@@ -40,7 +40,7 @@ namespace MVC.Data
                 var res = client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]);
                 res.Wait();
                 var readdata = res.Result;
-                //Test 
+
                 if (readdata.IsSuccessStatusCode)
                 {
                     var resulte = readdata.Content.ReadAsAsync<IList<CategoryModel>>();
@@ -55,9 +55,56 @@ namespace MVC.Data
             }
         }
 
+        public async Task<IEnumerable<CategoryModel>> GetAll_Categoty()
+        {
+            IEnumerable<CategoryModel> cat = null;
+            var client = _initapi.Initial();
+            try
+            {
+                HttpResponseMessage res = await client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]);
+
+                if (res.IsSuccessStatusCode)
+                {
+                    //var resulte = readdata.Content.ReadAsAsync<IList<CategoryModel>>();
+                    var resulte = res.Content.ReadAsStringAsync().Result;
+
+                    cat = JsonConvert.DeserializeObject<IEnumerable<CategoryModel>>(resulte);
+                }
+                return cat;
+            }
+            catch (Exception e)
+            {
+                return cat;
+            }
+        }
+
         public CategoryModel GetCategoryById(int? id)
         {
-            throw new NotImplementedException();
+            CategoryModel cat = null;
+            var client = _initapi.Initial();
+            try
+            {
+
+                if (id == null)
+                {
+                    return cat;
+                }
+                var res = client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]+"/"+id);
+                res.Wait();
+                var readdata = res.Result;
+
+                if (readdata.IsSuccessStatusCode)
+                {
+                    var resulte = readdata.Content.ReadAsAsync<CategoryModel>();
+                    resulte.Wait();
+                    cat = resulte.Result;
+                }
+                return cat;
+            }
+            catch (Exception e)
+            {
+                return cat;
+            }
         }
 
         public void UpdateCategory(CategoryModel cat)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using MVC.Data;
@@ -18,9 +19,10 @@ namespace MVC.Controllers
             ImpCat = _ImpCat;
         }
         // GET: Category
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(ImpCat.GetAllCategoty());
+            var res = await ImpCat.GetAll_Categoty();
+            return View(res);
         }
 
         // GET: Category/Details/5
