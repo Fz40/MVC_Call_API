@@ -40,6 +40,7 @@ namespace MVC.Data
                 var res = client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]);
                 res.Wait();
                 var readdata = res.Result;
+
                 if (readdata.IsSuccessStatusCode)
                 {
                     var resulte = readdata.Content.ReadAsAsync<IList<CategoryModel>>();
