@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Text;
+
 
 namespace MVC.Data
 {
@@ -21,9 +21,32 @@ namespace MVC.Data
         {
             _initapi = initapi;
         }
-        public void CreateCategory(CategoryModel cat)
+        public async Task<string> CreateCategory(CategoryModel cat)
         {
-            throw new NotImplementedException();
+            var client = _initapi.Initial();
+            try
+            {
+                if(cat == null)
+                {
+                    throw new ArgumentNullException(nameof(cat));
+                }
+                var json = JsonConvert.SerializeObject(cat);
+                HttpContent c = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage res = await client.PostAsync(ConfigurationManager.AppSettings["CategoryApiUrl"],c);
+                var StatusCode = res.StatusCode;
+                if(res.IsSuccessStatusCode)
+                {
+                    return StatusCode.ToString();
+                }
+                else
+                {
+                    return StatusCode.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public void DeleteCategory(CategoryModel cat)
@@ -78,25 +101,19 @@ namespace MVC.Data
             }
         }
 
-        public CategoryModel GetCategoryById(int? id)
+        public async Task<CategoryModel> GetCategoryById(int? id)
         {
             CategoryModel cat = null;
             var client = _initapi.Initial();
             try
             {
+                HttpResponseMessage res = await client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]+"/"+id);
+              
 
-                if (id == null)
+                if (res.IsSuccessStatusCode)
                 {
-                    return cat;
-                }
-                var res = client.GetAsync(ConfigurationManager.AppSettings["CategoryApiUrl"]+"/"+id);
-                res.Wait();
-                var readdata = res.Result;
+                    var resulte = res.Content.ReadAsAsync<CategoryModel>();
 
-                if (readdata.IsSuccessStatusCode)
-                {
-                    var resulte = readdata.Content.ReadAsAsync<CategoryModel>();
-                    resulte.Wait();
                     cat = resulte.Result;
                 }
                 return cat;

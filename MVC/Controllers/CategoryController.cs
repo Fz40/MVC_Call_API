@@ -26,13 +26,13 @@ namespace MVC.Controllers
         }
 
         // GET: Category/Details/5
-        public ActionResult Details(int? id)
+        public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var Cat = ImpCat.GetCategoryById(id);
+            var Cat = await ImpCat.GetCategoryById(id);
             if (Cat  != null)
             {
                 return View(Cat);
@@ -52,15 +52,25 @@ namespace MVC.Controllers
 
         // POST: Category/Create
         [HttpPost]
-        public ActionResult Create(CategoryModel CatModel)
+        public async Task<ActionResult> Create(CategoryModel CatModel)
         {
             try
             {
-                ImpCat.CreateCategory(CatModel);
-                return RedirectToAction("Index");
+                var status = await ImpCat.CreateCategory(CatModel);
+                if (status == "Created")
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    return View();
+                }
+                
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.ErrorMessage = ex.Message;
                 return View();
             }
         }

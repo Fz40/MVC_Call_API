@@ -14,9 +14,9 @@ namespace MVC.Data
         IEnumerable<CategoryModel> GetAllCategoty();
 
         Task<IEnumerable<CategoryModel>> GetAll_Categoty();
-        CategoryModel GetCategoryById(int? id);
+        Task<CategoryModel> GetCategoryById(int? id);
 
-        void CreateCategory(CategoryModel cat);
+        Task<string> CreateCategory(CategoryModel cat);
         void UpdateCategory(CategoryModel cat);
         void DeleteCategory(CategoryModel cat);
     }
