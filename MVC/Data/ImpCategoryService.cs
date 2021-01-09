@@ -14,12 +14,12 @@ namespace MVC.Data
     public class ImpCategoryService : ICategoryService
     {
         private readonly InitApi _initapi;
+        private readonly ConditionModel _condition;
 
-        private readonly List<CategoryModel> l_cat;
-
-        public ImpCategoryService(InitApi initapi)
+        public ImpCategoryService(InitApi initapi, ConditionModel condition)
         {
             _initapi = initapi;
+            _condition = condition;
         }
         public async Task<string> CreateCategory(CategoryModel cat)
         {
@@ -49,9 +49,26 @@ namespace MVC.Data
             }
         }
 
-        public void DeleteCategory(CategoryModel cat)
+        public async Task<string> DeleteCategory(int? id)
         {
-            throw new NotImplementedException();
+            var client = _initapi.Initial();
+            try
+            {
+                HttpResponseMessage res = await client.DeleteAsync(ConfigurationManager.AppSettings["CategoryApiUrl"] + "/" + id);
+                var StatusCode = res.StatusCode;
+                if (res.IsSuccessStatusCode)
+                {
+                    return StatusCode.ToString();
+                }
+                else
+                {
+                    return StatusCode.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public IEnumerable<CategoryModel> GetAllCategoty()
@@ -124,9 +141,66 @@ namespace MVC.Data
             }
         }
 
-        public void UpdateCategory(CategoryModel cat)
+        public async Task<string> UpdateCategory(CategoryModel cat)
         {
-            throw new NotImplementedException();
+            var client = _initapi.Initial();
+            try
+            {
+                var id = cat.CategoryID;
+                if (cat == null)
+                {
+                    throw new ArgumentNullException(nameof(cat));
+                }
+                var json = JsonConvert.SerializeObject(cat);
+                HttpContent c = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage res = await client.PutAsync(ConfigurationManager.AppSettings["CategoryApiUrl"] + "/" + id, c);
+                var StatusCode = res.StatusCode;
+                if (res.IsSuccessStatusCode)
+                {
+                    return StatusCode.ToString();
+                }
+                else
+                {
+                    return StatusCode.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
+        // ใช้สำหรับ
+        public async Task<IEnumerable<CategoryModel>> GetCategoryByCondition(CategoryModel cat)
+        {
+            IEnumerable<CategoryModel> data = null;
+            
+            var client = _initapi.Initial();
+            try
+            {
+                if (cat == null)
+                {
+                    throw new ArgumentNullException(nameof(cat));
+                }
+                _condition.id = cat.CategoryID;
+                _condition.Name = cat.CategoryName;
+                _condition.Description = cat.Description;
+                var json = JsonConvert.SerializeObject(_condition);
+                HttpContent c = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpResponseMessage res = await client.PostAsync(ConfigurationManager.AppSettings["ConditionApiUrl"], c);
+                if (res.IsSuccessStatusCode)
+                {
+                    //var resulte = readdata.Content.ReadAsAsync<IList<CategoryModel>>();
+                    var resulte = res.Content.ReadAsStringAsync().Result;
+
+                    data = JsonConvert.DeserializeObject<IEnumerable<CategoryModel>>(resulte);
+                }
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
 

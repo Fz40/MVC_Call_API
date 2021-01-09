@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using MVC.Data;
 using MVC.Models;
+using MVC.Utility;
 
 namespace MVC.Controllers
 {
@@ -19,23 +20,35 @@ namespace MVC.Controllers
             ImpCat = _ImpCat;
         }
         // GET: Category
+        [HttpGet]
         public async Task<ActionResult> Index()
         {
-            var res = await ImpCat.GetAll_Categoty();
-            return View(res);
+            try
+            {
+                CategoryModel cat = CategoryEmpty.Empty();
+                var res = await ImpCat.GetCategoryByCondition(cat);
+                return View(res);
+            }
+            catch ( Exception ex)
+            {
+                return HttpNotFound();
+            }
         }
 
         // GET: Category/Details/5
+        [HttpGet]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var Cat = await ImpCat.GetCategoryById(id);
-            if (Cat  != null)
+            CategoryModel cat = CategoryEmpty.Empty();
+            cat.CategoryID =(int) id;
+            var data = await ImpCat.GetCategoryByCondition(cat);
+            if (data  != null)
             {
-                return View(Cat);
+                return View(data);
             }
             else
             {
@@ -76,13 +89,14 @@ namespace MVC.Controllers
         }
 
         // GET: Category/Edit/5
-        public ActionResult Edit(int? id)
+        [HttpGet]
+        public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var Cat = ImpCat.GetCategoryById(id);
+            var Cat = await ImpCat.GetCategoryById(id);
             if (Cat != null)
             {
                 return View(Cat);
@@ -95,20 +109,68 @@ namespace MVC.Controllers
 
         // POST: Category/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, CategoryModel CatModel)
+        public async Task<ActionResult> Edit(int id, CategoryModel CatModel)
         {
             try
             {
-                var categoryModelFromImpCat = ImpCat.GetCategoryById(id);
-                if (categoryModelFromImpCat == null)
+                var status = await ImpCat.UpdateCategory(CatModel);
+                if (status == "NoContent")
                 {
-                    return HttpNotFound();
+                    return RedirectToAction("Index");
                 }
-                ImpCat.UpdateCategory(CatModel);
-                return RedirectToAction("Index");
+                else
+                {
+                    //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    return View();
+                }
+
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.ErrorMessage = ex.Message;
+                return View();
+            }
+        }
+
+        // GET: Category/Delete/5
+        [HttpGet]
+        public async Task<ActionResult> Deleted(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var Cat = await ImpCat.GetCategoryById(id);
+            if (Cat != null)
+            {
+                return View(Cat);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Deleted(int id, CategoryModel CatModel)
+        {
+            try
+            {
+                var status = await ImpCat.DeleteCategory(id);
+                if (status == "NoContent" || status == "Ok")
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    //return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    return View();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = ex.Message;
                 return View();
             }
         }

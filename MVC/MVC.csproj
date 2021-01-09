@@ -151,6 +151,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Data\ICategoryService.cs" />
     <Compile Include="Data\ImpCategoryService.cs" />
@@ -159,7 +160,9 @@
     </Compile>
     <Compile Include="Helper\InitApi.cs" />
     <Compile Include="Helper\CategoryAsync.cs" />
+    <Compile Include="Utility\CategoryEmpty.cs" />
     <Compile Include="Models\CategoryModel.cs" />
+    <Compile Include="Models\ConditionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -5353,9 +5356,13 @@
     <Content Include="Views\Category\Edit.cshtml" />
     <Content Include="Views\Category\Details.cshtml" />
     <Content Include="Views\Category\Create.cshtml" />
+    <Content Include="Views\Category\Deleted.cshtml" />
+    <Content Include="Views\Shared\NotFound.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Default\" />
+    <Folder Include="Views\Error\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

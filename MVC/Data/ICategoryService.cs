@@ -14,10 +14,16 @@ namespace MVC.Data
         IEnumerable<CategoryModel> GetAllCategoty();
 
         Task<IEnumerable<CategoryModel>> GetAll_Categoty();
+
         Task<CategoryModel> GetCategoryById(int? id);
 
+        Task<IEnumerable<CategoryModel>> GetCategoryByCondition(CategoryModel cat);
+
         Task<string> CreateCategory(CategoryModel cat);
-        void UpdateCategory(CategoryModel cat);
-        void DeleteCategory(CategoryModel cat);
+
+        Task<string> UpdateCategory(CategoryModel cat);
+
+        Task<string> DeleteCategory(int? id);
+        
     }
 }

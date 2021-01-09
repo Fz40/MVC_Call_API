@@ -16,5 +16,6 @@ namespace MVC.Models
         public string CategoryName { get; set; }
         [DisplayName("Category Description")]
         public string Description { get; set; }
+
     }
 }
